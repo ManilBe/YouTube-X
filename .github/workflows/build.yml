@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
 
     env:
-      THEOS: /opt/theos
+      THEOS: ${{ github.workspace }}/theos
       SDK_VERSION: 15.0
       TARGET_ARCH: arm64
 
@@ -23,13 +23,13 @@ jobs:
       run: |
         brew install ldid dpkg make perl
 
-    - name: Clone Theos
+    - name: Clone Theos locally (not in /opt)
       run: |
-        git clone --recursive https://github.com/theos/theos.git /opt/theos
+        git clone --recursive https://github.com/theos/theos.git theos
 
-        mkdir -p /opt/theos/sdks
-        curl -L -o /opt/theos/sdks/iPhoneOS15.0.sdk.tar.gz https://github.com/theos/sdks/releases/download/20230806/iPhoneOS15.0.sdk.tar.gz
-        tar -xzf /opt/theos/sdks/iPhoneOS15.0.sdk.tar.gz -C /opt/theos/sdks
+        mkdir -p theos/sdks
+        curl -L -o theos/sdks/iPhoneOS15.0.sdk.tar.gz https://github.com/theos/sdks/releases/download/20230806/iPhoneOS15.0.sdk.tar.gz
+        tar -xzf theos/sdks/iPhoneOS15.0.sdk.tar.gz -C theos/sdks
 
     - name: Build the tweak
       run: |
