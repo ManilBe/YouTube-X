@@ -1,0 +1,43 @@
+name: Build YouTube-X Tweak
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    env:
+      THEOS: /opt/theos
+      SDK_VERSION: 15.0
+      TARGET_ARCH: arm64
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        brew install ldid dpkg make perl
+
+    - name: Clone Theos
+      run: |
+        git clone --recursive https://github.com/theos/theos.git /opt/theos
+
+        mkdir -p /opt/theos/sdks
+        curl -L -o /opt/theos/sdks/iPhoneOS15.0.sdk.tar.gz https://github.com/theos/sdks/releases/download/20230806/iPhoneOS15.0.sdk.tar.gz
+        tar -xzf /opt/theos/sdks/iPhoneOS15.0.sdk.tar.gz -C /opt/theos/sdks
+
+    - name: Build the tweak
+      run: |
+        make clean
+        make
+
+    - name: Upload .dylib artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: YouTubeX.dylib
+        path: .theos/obj/YouTubeX.dylib
